@@ -61,7 +61,8 @@ In this run, the post-warmup spike is significantly reduced compared to the prev
 *fig. 5 - 82k effective batch, 5e-5 AdamW lr, 1e-5 Muon lr, wd = 0.0, cosine annealing with ~5% warmup tokens.*
 The slope analysis reflects improved stability. Muon no longer exhibits a strong positive slope after the warmup phase, indicating that the transition is less noisy. However, this comes at the cost of slower convergence: the loss decreases more gradually, and Muon does not show the same rapid recovery as in the higher learning rate setting.
 Overall, lowering the learning rate and removing weight decay stabilizes Muon but reduces its convergence speed, resulting in a more stable yet less competitive optimization behavior compared to the baseline configurations.
-![Pasted image 20260427111803](report/attachments/Pasted%20image%2020260427111803.png)*fig. 6 - learning rate slope display for Experiment 2*
+![Pasted image 20260427111803](report/attachments/Pasted%20image%2020260427111803.png)
+*fig. 6 - learning rate slope display for Experiment 2*
 ### 3. Evaluation results
 The table shows performance on several downstream tasks for different optimizer setups.  
 ![Pasted image 20260427114520](report/attachments/Pasted%20image%2020260427114520.png)
