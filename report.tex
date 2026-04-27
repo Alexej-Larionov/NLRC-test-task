@@ -37,6 +37,8 @@
 \makeatother
 \usepackage{xcolor}
 \usepackage{graphicx}
+\usepackage{float}
+\usepackage[a4paper,top=1.2cm,bottom=1.2cm,left=2cm,right=2cm]{geometry}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -101,8 +103,9 @@ than 1\% additional FLOPs in typical transformer training regimes.
 As a limitation, Muon is applicable only to 2D (and higher-dimensional
 reshaped) weight matrices, and is not recommended for input/output
 layers such as embeddings and final classifier heads, where different
-optimization dynamics are empirically more effective. \#\#\# 2. AdamW
-optimizer AdamW is an adaptive optimization algorithm based on Adam,
+optimization dynamics are empirically more effective. 
+\subsubsection{ 2. AdamW optimizer}
+AdamW is an adaptive optimization algorithm based on Adam,
 which maintains exponentially decaying estimates of first and second
 moments of gradients. These moment estimates are used to compute
 parameter-wise adaptive learning rates, improving convergence speed and
@@ -123,8 +126,10 @@ typically more expensive than SGD in both memory and compute.
 AdamW is widely used as a strong baseline for training transformer
 models and is particularly effective for optimizing embeddings,
 normalization layers, and output heads, where adaptive scaling of
-updates is beneficial. \#\# 2. Performance comparison \#\#\# 1. Data,
-model and experiment setup To compare the optimizers, we used the
+updates is beneficial. 
+\subsection{ 2. Performance comparison }
+\subsubsection{ 1. Data,model and experiment setup} 
+To compare the optimizers, we used the
 pretrained model
 \href{https://huggingface.co/Qwen/Qwen2.5-0.5B}{Qwen2.5-0.5B}, which was
 fine-tuned on the
@@ -180,8 +185,9 @@ In addition to training performance, we measured optimizer-specific
 resource characteristics. This includes memory consumption (both for
 hidden parameters and total optimizer state) as well as step time,
 allowing us to compare not only convergence behavior but also
-computational and memory efficiency across configurations. \#\#\# 2.
-Experiment results For the first experiment, an effective batch size of
+computational and memory efficiency across configurations. 
+\subsubsection{ 2.Experiment results}
+For the first experiment, an effective batch size of
 492k tokens per update was used. The first noticeable divergence in
 optimizer behavior appears immediately after the warmup peak (with
 cosine annealing), where the Muon and Mixed configurations exhibit
@@ -191,14 +197,23 @@ learning rate decay phase: Muon begins to reduce the loss more rapidly
 than the other configurations. In the interval between 10M and 60M
 tokens, AdamW achieves the lowest loss, followed by the Mixed setup,
 while Muon shows a noticeably higher peak.
+
+\begin{figure}[H]
+\centering
 \includegraphics{report/attachments/Pasted image 20260427104850.png}
-\emph{fig.~1 - 492k effective batch, 5e-5 AdamW lr, 1e-3 Muon lr, wd =
-0.01, cosine annealing with \textasciitilde5\% warmup tokens.} However,
-after approximately 66M tokens and until the end of training, the trend
-reverses. Muon achieves the lowest loss, while the Mixed configuration
-remains intermediate between Muon and AdamW.
+\caption{492k effective batch, 5e-5 AdamW lr, 1e-3 Muon lr, wd =
+0.01, cosine annealing with \textasciitilde5\% warmup tokens.}
+\end{figure}
+
+However, after approximately 66M tokens and until the end of training,
+the trend reverses. Muon achieves the lowest loss, while the Mixed
+configuration remains intermediate between Muon and AdamW.
+
+\begin{figure}[H]
+\centering
 \includegraphics{report/attachments/Pasted image 20260427110942.png}
-\emph{fig.~2 - learning rate slope display for Experiment 1}
+\caption{learning rate slope display for Experiment 1}
+\end{figure}
 
 For the second experiment, the effective batch size was reduced to 82k
 tokens per update, increasing the number of update steps while keeping
@@ -209,15 +224,22 @@ AdamW baseline and the previous large-batch experiment. Immediately
 after the warmup phase, Muon and Mixed show a stronger increase in loss.
 However, similarly to the first experiment, Muon begins to close the gap
 with AdamW and Mixed as the learning rate decreases.
-\includegraphics{report/attachments/Pasted image 20260427105822.png}\emph{fig.~3
-- 82k effective batch, 5e-5 AdamW lr, 1e-3 Muon lr, wd = 0.01, cosine
-annealing with \textasciitilde5\% warmup tokens.} Compared to Experiment
-1, both Muon and Mixed exhibit a positive slope when exiting the warmup
-phase. This behavior is likely caused by the higher update frequency,
-which introduces noisier gradients.
+\begin{figure}[H]
+\includegraphics{report/attachments/Pasted image 20260427105822.png}
+\caption{ 82k effective batch, 5e-5 AdamW lr, 1e-3 Muon lr, wd = 0.01, cosine
+annealing with \textasciitilde5\% warmup tokens.}
+\end{figure}
+Compared to Experiment 1, both Muon and Mixed exhibit a positive slope
+when exiting the warmup phase. This behavior is likely caused by the
+higher update frequency, which introduces noisier gradients.
+
+\begin{figure}[H]
+\centering
 \includegraphics{report/attachments/Pasted image 20260427110718.png}
-\emph{fig.~4 - learning rate slope display for Experiment 2} For the
-final experiment, the Muon learning rate was reduced to
+\caption{learning rate slope display for Experiment 2}
+\end{figure}
+
+For the final experiment, the Muon learning rate was reduced to
 \(1 \times 10^{-5}\) and weight decay was set to \(0.0\), while keeping
 the effective batch size at 82k tokens per update. The goal was to
 stabilize Muon by reducing the magnitude of its updates. In this run,
@@ -225,25 +247,45 @@ the post-warmup spike is significantly reduced compared to the previous
 experiment. Muon follows a much smoother trajectory and stays closer to
 the Mixed configuration, although it still remains above the AdamW
 baseline.
+
+\begin{figure}[H]
+\centering
 \includegraphics{report/attachments/Pasted image 20260427111756.png}
-\emph{fig.~5 - 82k effective batch, 5e-5 AdamW lr, 1e-5 Muon lr, wd =
-0.0, cosine annealing with \textasciitilde5\% warmup tokens.} The slope
-analysis reflects improved stability. Muon no longer exhibits a strong
-positive slope after the warmup phase, indicating that the transition is
-less noisy. However, this comes at the cost of slower convergence: the
-loss decreases more gradually, and Muon does not show the same rapid
-recovery as in the higher learning rate setting. Overall, lowering the
-learning rate and removing weight decay stabilizes Muon but reduces its
-convergence speed, resulting in a more stable yet less competitive
-optimization behavior compared to the baseline configurations.
-\includegraphics{report/attachments/Pasted image 20260427111803.png}\emph{fig.~6
-- learning rate slope display for Experiment 2} \#\#\# 3. Evaluation
-results The table shows performance on several downstream tasks for
-different optimizer setups.\\
+\caption{82k effective batch, 5e-5 AdamW lr, 1e-5 Muon lr, wd =
+0.0, cosine annealing with \textasciitilde5\% warmup tokens.}
+\end{figure}
+
+The slope analysis reflects improved stability. Muon no longer exhibits
+a strong positive slope after the warmup phase, indicating that the
+transition is less noisy. However, this comes at the cost of slower
+convergence: the loss decreases more gradually, and Muon does not show
+the same rapid recovery as in the higher learning rate setting. Overall,
+lowering the learning rate and removing weight decay stabilizes Muon but
+reduces its convergence speed, resulting in a more stable yet less
+competitive optimization behavior compared to the baseline
+configurations.
+
+\begin{figure}[H]
+\centering
+\includegraphics{report/attachments/Pasted image 20260427111803.png}
+\caption{learning rate slope display for Experiment 2}
+\end{figure}
+
+\hypertarget{evaluation-results}{%
+\subsubsection{3. Evaluation results}\label{evaluation-results}}
+
+The table shows performance on several downstream tasks for different
+optimizer setups.
+
+\begin{figure}[H]
+\centering
 \includegraphics{report/attachments/Pasted image 20260427114520.png}
-\emph{fig.~7 - evaluation results} The best overall results are achieved
-by the final \textbf{Muon} run (with lower learning rate). It performs
-at the top or near the top on most tasks. In particular:\\
+\caption{evaluation results}
+\end{figure}
+
+The best overall results are achieved by the final \textbf{Muon} run
+(with lower learning rate). It performs at the top or near the top on
+most tasks. In particular:\\
 - On \textbf{HellaSwag}, Muon achieves the highest score.\\
 - On \textbf{PIQA} and \textbf{ARC-Challenge}, Muon is very close to the
 best results.\\
@@ -263,28 +305,43 @@ AdamW remains a strong and stable baseline:\\
 - and is especially strong on ARC-Easy.\\
 Overall, Muon can outperform AdamW, but only when properly tuned. With
 high learning rates, it tends to hurt generalization, while lower
-learning rates make it competitive or better than the baseline. \#\# 3.
-Resource efficiency analysis The first plot shows optimizer step time as
-a percentage of the total step time. AdamW introduces very low overhead
-in all configurations, typically staying below 1\%. In contrast, Muon
-adds noticeable overhead due to the additional Newton--Schulz
-iterations.
+learning rates make it competitive or better than the baseline.
+
+\hypertarget{resource-efficiency-analysis}{%
+\subsection{3. Resource efficiency
+analysis}\label{resource-efficiency-analysis}}
+
+The first plot shows optimizer step time as a percentage of the total
+step time. AdamW introduces very low overhead in all configurations,
+typically staying below 1\%. In contrast, Muon adds noticeable overhead
+due to the additional Newton--Schulz iterations.
+
+\begin{figure}[H]
+\centering
 \includegraphics{report/attachments/Pasted image 20260427115756.png}
-\emph{fig.~8 - optimizer step overhead} This overhead depends on the
-setup: with large batch sizes it remains relatively moderate, while with
-smaller batches it becomes significantly higher, reaching up to around
-5\% in the most expensive case. This indicates that Muon is more
-efficient when the forward and backward passes dominate computation, and
-less efficient when optimizer cost becomes a larger fraction of the
-step.
+\caption{optimizer step overhead}
+\end{figure}
+
+
+This overhead depends on the setup: with large batch sizes it remains
+relatively moderate, while with smaller batches it becomes significantly
+higher, reaching up to around 5\% in the most expensive case. This
+indicates that Muon is more efficient when the forward and backward
+passes dominate computation, and less efficient when optimizer cost
+becomes a larger fraction of the step.
+
+\begin{figure}[H]
+\centering
 \includegraphics{report/attachments/Pasted image 20260427114533.png}
-\emph{fig.~9 - optimizer memory usage} The second plot shows optimizer
-state memory usage. AdamW consistently has the highest memory
-consumption because it stores both first and second moment estimates for
-all parameters. Muon requires substantially less memory, since it does
-not maintain full moment statistics in the same way. Mixed
-configurations fall between the two, reflecting the proportion of
-parameters handled by each optimizer.\\
+\caption{optimizer memory usage}
+\end{figure}
+
+The second plot shows optimizer state memory usage. AdamW consistently
+has the highest memory consumption because it stores both first and
+second moment estimates for all parameters. Muon requires substantially
+less memory, since it does not maintain full moment statistics in the
+same way. Mixed configurations fall between the two, reflecting the
+proportion of parameters handled by each optimizer.\\
 Overall, Muon provides a clear reduction in memory usage compared to
 AdamW, typically by a factor of two to three, but this comes at the cost
 of increased computation time per step. AdamW remains the most
