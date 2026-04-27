@@ -6,7 +6,7 @@
   "steps": 1318,
   "warmup": 66,
   "lr_adam": 0.00005,
-  "lr_muon": 0.001,
+  "lr_muon": 0.00001,
   "grad_clip": 1.0,
   "ckpt_every": 200,
   "wd_adam": 0.01,
