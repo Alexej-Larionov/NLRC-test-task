@@ -31,11 +31,11 @@ Inside the container, download the cached model and dataset assets:
 
 `python download_assets.py`
 
-The assets are stored in assets/. Training outputs are stored in runs/.
+The assets are stored in `assets/`. Training outputs are stored in `runs/`.
 
 ## Training
 
-Training is launched with train.py. The optimizer mode is selected with --mode, and training hyperparameters can be passed through a JSON config.
+Training is launched with `train.py`. The optimizer mode is selected with `--mode`, and training hyperparameters can be passed through a JSON config.
 ```bash
 python train.py --mode adam --config Experiment2.json
 python train.py --mode muon --config Experiment2.json
@@ -63,7 +63,7 @@ Example config:
 ```
 The effective number of tokens per optimizer update is:
 
-tokens/update = batch_size × grad_acc × seq_len
+`tokens/update = batch_size × grad_acc × seq_len`
 
 For the config above, this is:
 
@@ -86,7 +86,7 @@ After training, run:
 
 `python my_eval_lm.py`
 
-The evaluation script reads runs/runs.jsonl, loads unevaluated checkpoints, runs lm-evaluation-harness, saves compact eval JSON files, and updates runs/runs.jsonl.
+The evaluation script reads `runs/runs.jsonl`, loads unevaluated checkpoints, runs lm-evaluation-harness, saves compact eval JSON files, and updates `runs/runs.jsonl`.
 
 The default evaluation tasks are:
 
