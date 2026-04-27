@@ -63,12 +63,13 @@ For the config above, this is:
 2 × 40 × 1024 = 81,920 tokens/update
 
 Each run creates a directory like:
-
+```text
 runs/<mode>_<timestamp>/
 ├── train.jsonl
 ├── ckpt_200/
 ├── ckpt_400/
 └── final/
+```
 
 Each checkpoint contains the saved model and optimizer state. The training log contains per-step loss, tokens seen, throughput, forward/backward time, optimizer step time, and optimizer memory statistics.
 
