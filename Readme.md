@@ -3,6 +3,13 @@
 This repository contains an experimental pipeline for comparing optimizer behavior during continued pretraining / fine-tuning of a small causal language model. The main comparison is between three modes: full AdamW, full Muon for transformer matrix weights with AdamW for auxiliary parameters, and a mixed setup where part of the transformer is optimized with Muon and the rest with AdamW.
 
 The experiment logs training loss, processed tokens, throughput, forward/backward time, optimizer step time, optimizer state memory, checkpoints, and zero-shot evaluation results. The main output directory is `runs/`; the central run index is `runs/runs.jsonl`.
+## Report
+
+The technical report is available in three formats:
+
+- [Markdown report](Report1.md)
+- [LaTeX source](report.tex)
+- [PDF report](report.pdf)
 
 ## Requirements
 
