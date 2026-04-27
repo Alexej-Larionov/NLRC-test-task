@@ -7,7 +7,7 @@ The experiment logs training loss, processed tokens, throughput, forward/backwar
 
 The technical report is available in three formats:
 
-- [Markdown report]("Report 1.md")
+- [Markdown report](Report1.md)
 - [LaTeX source](report.tex)
 - [PDF report](report.pdf)
 
